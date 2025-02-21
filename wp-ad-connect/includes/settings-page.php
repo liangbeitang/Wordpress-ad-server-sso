@@ -1,3 +1,4 @@
+php
 <?php
 // 防止直接访问该文件，确保在 WordPress 环境下运行
 if (!defined('ABSPATH')) {
@@ -34,6 +35,10 @@ class ADC_Settings_Page {
         register_setting('adc-settings-group', 'adc_ldap_host');
         register_setting('adc-settings-group', 'adc_default_role');
         register_setting('adc-settings-group', 'adc_mail_service');
+        register_setting('adc-settings-group', 'adc_admin_user');
+        register_setting('adc-settings-group', 'adc_admin_password');
+        register_setting('adc-settings-group', 'adc_domain_to_sync');
+        register_setting('adc-settings-group', 'adc_dn');
     }
 
     /**
@@ -66,15 +71,40 @@ class ADC_Settings_Page {
                                 <?php
                                 // 获取可编辑的用户角色列表
                                 $roles = get_editable_roles();
-                                foreach ($roles as $role_name => $role_info) {
-                                    // 为每个角色生成一个选项，并标记当前选中的角色
-                                    $selected = selected($role_name, get_option('adc_default_role'), false);
-                                    echo '<option value="' . esc_attr($role_name) . '" ' . $selected . '>' . esc_html(
-                                            $role_info['name']
-                                        ) . '</option>';
+                                foreach ($roles as $role => $details) {
+                                    $selected = (get_option('adc_default_role') == $role) ? 'selected' : '';
+                                    echo '<option value="'. esc_attr($role) .'" '. $selected .'>'. esc_html(translate_user_role($details['name'])) .'</option>';
                                 }
                                 ?>
                             </select>
+                        </td>
+                    </tr>
+                    <tr valign="top">
+                        <th scope="row">AD Admin User</th>
+                        <td>
+                            <input type="text" name="adc_admin_user"
+                                   value="<?php echo esc_attr(get_option('adc_admin_user')); ?>"/>
+                        </td>
+                    </tr>
+                    <tr valign="top">
+                        <th scope="row">AD Admin Password</th>
+                        <td>
+                            <input type="password" name="adc_admin_password"
+                                   value="<?php echo esc_attr(get_option('adc_admin_password')); ?>"/>
+                        </td>
+                    </tr>
+                    <tr valign="top">
+                        <th scope="row">Domain to Sync</th>
+                        <td>
+                            <input type="text" name="adc_domain_to_sync"
+                                   value="<?php echo esc_attr(get_option('adc_domain_to_sync')); ?>"/>
+                        </td>
+                    </tr>
+                    <tr valign="top">
+                        <th scope="row">Distinguished Name (DN)</th>
+                        <td>
+                            <input type="text" name="adc_dn"
+                                   value="<?php echo esc_attr(get_option('adc_dn')); ?>"/>
                         </td>
                     </tr>
                     <tr valign="top">
