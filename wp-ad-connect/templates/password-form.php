@@ -50,7 +50,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             // 这里需要添加实际修改 Active Directory 密码的逻辑
             // 假设存在一个修改 AD 密码的函数
-            $ad_modified = modify_ad_password($user->user_login, $new_password);
+            if (function_exists('modify_ad_password')) {
+                $ad_modified = modify_ad_password($user->user_login, $new_password);
+            } else {
+                $ad_modified = false;
+                error_log('modify_ad_password function not found');
+            }
 
             if ($ad_modified) {
                 $message = 'Your Active Directory password has been successfully changed.';
